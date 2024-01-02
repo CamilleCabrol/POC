@@ -7,6 +7,7 @@ SGC - Camille CABROL
 
 ##Rajouter sur mon ordi
 # pip install langdetect
+# pip install flair
 
 import streamlit as st
 import spacy
@@ -30,6 +31,7 @@ nlp = spacy.load("fr_core_news_sm")
 
 # Fonction principale de l'application. Elle gère l'interface utilisateur et l'analyse du texte.
 def main():
+
     st.title("Extraction de Connaissances à partir de Textes")
     text = st.text_area("Entrez votre texte ici:", "")
 
@@ -48,14 +50,16 @@ def main():
             st.warning("Veuillez entrer du texte avant d'analyser.")
         else:
             # Permet la détection de la langue
-            detected_language = detect_language(text)
+            with st.spinner("Analyse en cours..."):
+                detected_language = detect_language(text)
 
             # Affiche la langue détectée dans le conteneur, mais seulement si la langue est détectée
             if detected_language:
                 # Affiche la langue détectée dans le conteneur
                 lang_result_container.text(detected_language)
 
-            analyze_text(text, wordcloud_width, wordcloud_height, wordcloud_bg_color)
+            with st.spinner("Analyse du texte en cours..."):
+                analyze_text(text, wordcloud_width, wordcloud_height, wordcloud_bg_color)
     
 
 
@@ -99,7 +103,8 @@ def get_entity_label_name(label):
 def analyze_text(text, wordcloud_width, wordcloud_height, wordcloud_bg_color):
     try:
         doc = nlp(text)
-        display_results(doc, wordcloud_width, wordcloud_height, wordcloud_bg_color)
+        with st.spinner("Affichage des résultats..."):
+            display_results(doc, wordcloud_width, wordcloud_height, wordcloud_bg_color)
     except Exception as e:
         st.error(f"Une erreur s'est produite lors de l'analyse du texte : {str(e)}")
 
@@ -109,7 +114,7 @@ def analyze_text(text, wordcloud_width, wordcloud_height, wordcloud_bg_color):
 # :param doc: Le document SpaCy analysé.
 # :return: Une liste de tuples contenant le texte de l'entité et son label.
 def extract_entities(doc):
-    entities = [(ent.text, ent.label_) for ent in doc.ents]
+    entities = {(ent.text, ent.label_) for ent in doc.ents}
     return entities
 
 
