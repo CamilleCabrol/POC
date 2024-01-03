@@ -8,5 +8,7 @@ def detect_language(text):
     try:
         language = detect(text)
         st.write(f"Langue détectée : {language}")
+        #return language
     except Exception as e:
         st.error(f"Une erreur s'est produite lors de la détection de la langue : {str(e)}")
+        #return None
