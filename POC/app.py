@@ -22,7 +22,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 
 
 # Chargement le modèle SpaCy
-nlp = spacy.load("fr_core_news_sm")
+nlp = spacy.load("fr_core_news_md")
 
 
 # # clé API OpenAI
@@ -61,7 +61,12 @@ def main():
             with st.spinner("Analyse du texte en cours..."):
                 analyze_text(text, wordcloud_width, wordcloud_height, wordcloud_bg_color)
     
+# Liste par défaut des mots vides de spaCy
+default_stopwords = set(nlp.Defaults.stop_words)
 
+# Liste personnelle des mots vides
+custom_stopwords = {'neuf', 'qu', 'quelqu'} 
+combined_stopwords = default_stopwords.union(custom_stopwords)
 
 # Détecte la langue du texte donné en utilisant une bibliothèque de détection de la langue.
 
@@ -161,7 +166,7 @@ def generate_wordcloud(doc, width, height, bg_color):
     text = " ".join([token.text for token in doc])
 
     # Génération du nuage de mots
-    wordcloud = WordCloud(width=width, height=height, background_color=bg_color, stopwords=nlp.Defaults.stop_words).generate(text)
+    wordcloud = WordCloud(width=width, height=height, background_color=bg_color, stopwords=combined_stopwords).generate(text)
 
     # Affichage du nuage de mots
     plt.figure(figsize=(10, 5))
@@ -178,7 +183,7 @@ def generate_summary(doc):
     sentences = [sent.text for sent in doc.sents]
 
     # Utilisation de TF-IDF pour attribuer des scores aux phrases
-    tfidf_vectorizer = TfidfVectorizer(stop_words=list(nlp.Defaults.stop_words))
+    tfidf_vectorizer = TfidfVectorizer(stop_words=list(combined_stopwords))
     tfidf_matrix = tfidf_vectorizer.fit_transform(sentences)
 
     # Calcul de la similarité cosinus entre les phrases
