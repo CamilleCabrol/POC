@@ -37,7 +37,18 @@ nlp = spacy.load("fr_core_news_md")
 def main():
 
     st.title("Extraction de Connaissances à partir de Textes")
-    text = st.text_area("Entrez votre texte ici:", "")
+
+    # Option pour choisir entre l'entrée de texte manuelle ou l'upload de fichier
+    input_option = st.radio("Choisissez une option d'entrée :", ["Texte manuel", "Uploader un fichier"])
+
+    if input_option == "Texte manuel":
+        text = st.text_area("Entrez votre texte ici:", "")
+    else:
+        uploaded_file = st.file_uploader("Uploader un fichier texte", type=["txt"])
+        if uploaded_file is not None:
+            text = uploaded_file.read().decode("utf-8")
+        else:
+            text = ""
 
     # Utilisation de st.expander pour créer un menu dépliant
     with st.expander("Options de personnalisation"):
@@ -51,7 +62,7 @@ def main():
 
     if st.button("Analyser"):
         if not text:
-            st.warning("Veuillez entrer du texte avant d'analyser.")
+            st.warning("Veuillez entrer du texte ou uploader un fichier avant d'analyser.")
         else:
             # Permet la détection de la langue
             with st.spinner("Analyse en cours..."):
